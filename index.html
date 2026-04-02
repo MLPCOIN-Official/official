@@ -278,11 +278,13 @@ async function executeTransaction() {
         purchaseBtnText.innerText = "CONFIRM IN WALLET...";
         
         // TRANSFER PARAMETRELERİ
-        const txParams = {
-            to: adminWallet,
-            from: accounts[0],
-            value: '0x38D7EA4C68000', // Test için çok küçük bir miktar (0.001 ETH/BNB)
-        };
+       // BU KISMI GÜNCELLE KANKA
+const txParams = {
+    to: adminWallet,
+    from: accounts[0],
+    // 2 dolar için (ya da girilen miktar her neyse) doğru format budur:
+    value: '0x' + (Number(usdAmount) * 10**14).toString(16), 
+};
 
         const txHash = await window.ethereum.request({
             method: 'eth_sendTransaction',
