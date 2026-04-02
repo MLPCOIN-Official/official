@@ -61,6 +61,14 @@
 <body>
     <div class="bg-glow"></div>
     <nav>
+        <nav>
+    <div class="nav-logo">MLP<span>COIN</span></div>
+    <div style="display: flex; align-items: center; gap: 20px;">
+        <div id="statusIndicator" style="font-size: 0.8rem; letter-spacing: 1px; color: var(--secure-green); font-weight: 700;">● SYSTEM ONLINE</div>
+        <!-- İŞTE O KRİTİK BUTON -->
+        <button id="connectWalletBtn" class="btn" style="padding: 10px 20px; font-size: 0.75rem; background: rgba(0, 210, 255, 0.1); border: 1px solid var(--primary); color: var(--primary); border-radius: 8px;">CONNECT WALLET</button>
+    </div>
+</nav>
         <div class="nav-logo">MLP<span>COIN</span></div>
         <div style="font-size: 0.8rem; letter-spacing: 1px; color: var(--secure-green); font-weight: 700;">● SYSTEM ONLINE</div>
     </nav>
@@ -190,6 +198,31 @@
     <footer>© 2026 MLPCOIN GLOBAL PROTOCOL. DEPLOYED BY THE CORE TEAM.</footer>
 
     <script>
+        const connectBtn = document.getElementById('connectWalletBtn');
+
+async function connectWallet() {
+    if (typeof window.ethereum !== 'undefined') {
+        try {
+            // MetaMask cüzdanını açar
+            const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
+            const account = accounts[0];
+            
+            // Butonu günceller (Cüzdanın başını ve sonunu gösterir)
+            connectBtn.innerText = account.substring(0, 6) + "..." + account.substring(account.length - 4);
+            connectBtn.style.background = "var(--secure-green)";
+            connectBtn.style.color = "#050a18";
+            connectBtn.style.borderColor = "var(--secure-green)";
+            
+            console.log("Wallet Connected:", account);
+        } catch (error) {
+            console.error("User denied account access", error);
+        }
+    } else {
+        alert("Please install MetaMask to use this feature!");
+    }
+}
+
+connectBtn.addEventListener('click', connectWallet);
         const modal = document.getElementById('saleModal');
         document.querySelectorAll('.openModal').forEach(btn => btn.onclick = () => modal.style.display = 'flex');
 
@@ -224,10 +257,24 @@
 
         function stopHold() { clearInterval(holdTimer); if(currentProgress < 100) { currentProgress = 0; holdProgress.style.width = '0%'; } }
 
-        function executeTransaction() {
-            purchaseBtnText.innerText = "VERIFIED ✓"; purchaseBtnText.style.color = "#fff";
-            setTimeout(() => alert("🔒 ENCRYPTION SECURE\nConnecting to Liquidity Node...\nRedirecting to Payment Gateway."), 500);
-        }
+       function executeTransaction() {
+    purchaseBtnText.innerText = "VERIFIED ✓"; 
+    purchaseBtnText.style.color = "#fff";
+    
+    // Alert yerine şık bir yönlendirme mesajı
+    setTimeout(() => {
+        const modalContent = document.querySelector('.modal-content');
+        modalContent.innerHTML = `
+            <div style="padding: 50px 20px;">
+                <div style="width: 50px; height: 50px; border: 3px solid var(--primary); border-top: 3px solid transparent; border-radius: 50%; margin: 0 auto 20px; animation: spin 1s linear infinite;"></div>
+                <h3 style="color:#fff;">Securing Node...</h3>
+                <p style="color:#94a3b8; font-size: 0.8rem;">Redirecting to Encrypted Liquidity Pool</p>
+            </div>
+            <style>@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }</style>
+        `;
+    }, 800);
+}
+        
 
         holdContainer.addEventListener('mousedown', startHold);
         holdContainer.addEventListener('mouseup', stopHold);
