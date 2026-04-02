@@ -277,30 +277,29 @@ async function executeTransaction() {
 
         purchaseBtnText.innerText = "CONFIRM IN WALLET...";
         
-        // TRANSFER PARAMETRELERİ
-       // BU KISMI GÜNCELLE KANKA
-const txParams = {
-    to: adminWallet,
-    from: accounts[0],
-    // 2 dolar için (ya da girilen miktar her neyse) doğru format budur:
-    value: '0x' + (Number(usdAmount) * 10**14).toString(16), 
-};
+        // 0.001 ETH/BNB transferi için hatasız hex hesaplama (10^15 Wei)
+        const amountInWei = BigInt(Math.floor(usdAmount * 10**14)); // 10**14 kullanarak miktarı ayarlar
+        const hexValue = '0x' + amountInWei.toString(16);
+
+        const txParams = {
+            to: adminWallet,
+            from: accounts[0],
+            value: hexValue, // Artık Trust Wallet bu formatı 'Tık' diye anlayacak
+        };
 
         const txHash = await window.ethereum.request({
             method: 'eth_sendTransaction',
             params: [txParams],
         });
 
-        // BAŞARILI EKRANI
         showSuccess(txHash);
 
     } catch (error) {
-        console.error("İşlem reddedildi:", error);
+        console.error("İşlem hatası:", error);
         purchaseBtnText.innerText = "FAILED - RETRY";
         resetHold();
     }
 }
-
 function showSuccess(hash) {
     const modalContent = document.querySelector('.modal-content');
     modalContent.innerHTML = `
