@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MLPCOIN | Medical Life Protocol</title>
+    <!-- FAVICON -->
+    <link rel="icon" type="image/png" href="mlpcoinlogo.png">
+    <link rel="apple-touch-icon" href="mlpcoinlogo.png">
+    <style>
+        :root {
+            --primary: #00d2ff;
+            --bg: #050a18;
+            --card-bg: rgba(255, 255, 255, 0.03);
+            --border: rgba(255, 255, 255, 0.1);
+        }
+
+        body {
+            background-color: var(--bg);
+            color: white;
+            font-family: 'Inter', 'Segoe UI', sans-serif;
+            margin: 0;
+            overflow-x: hidden;
+            line-height: 1.6;
+        }
+
+        .bg-glow {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at 50% 30%, #1a2a4a 0%, #050a18 70%);
+            z-index: -1;
+        }
+
+        nav {
+            padding: 20px 5%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(5, 10, 24, 0.8);
+            backdrop-filter: blur(10px);
+            position: fixed;
+            width: 90%;
+            top: 0;
+            z-index: 100;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .hero {
+            padding: 180px 20px 100px;
+            text-align: center;
+        }
+
+        .logo-wrapper {
+            position: relative;
+            display: inline-block;
+            margin-bottom: 30px;
+        }
+
+        .logo-glow {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 250px; height: 250px;
+            background: radial-gradient(circle, rgba(0,210,255,0.15) 0%, rgba(5,10,24,0) 70%);
+            z-index: 1;
+        }
+
+        .logo-img {
+            width: 180px;
+            position: relative;
+            z-index: 2;
+            filter: drop-shadow(0 0 15px rgba(0, 210, 255, 0.2));
+            transition: 0.5s ease;
+        }
+
+        h1 {
+            font-size: clamp(2.5rem, 6vw, 4rem);
+            font-weight: 800;
+            margin: 10px 0;
+            background: linear-gradient(to right, #fff, var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -1px;
+        }
+
+        .tagline {
+            font-size: 1.2rem;
+            color: #8a99b5;
+            max-width: 700px;
+            margin: 0 auto 40px;
+        }
+
+        .btn {
+            padding: 16px 45px;
+            background: var(--primary);
+            color: #050a18;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: 0.3s;
+            box-shadow: 0 10px 30px rgba(0, 210, 255, 0.3);
+        }
+
+        .btn:hover {
+            box-shadow: 0 15px 40px rgba(0, 210, 255, 0.5);
+            transform: translateY(-3px);
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            padding: 50px 10%;
+            margin-bottom: 100px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            padding: 40px;
+            border-radius: 24px;
+            border: 1px solid var(--border);
+            backdrop-filter: blur(5px);
+            transition: 0.4s;
+        }
+
+        .card:hover {
+            border-color: var(--primary);
+            transform: translateY(-10px);
+        }
+
+        .card h3 { color: var(--primary); margin-bottom: 15px; }
+
+        footer {
+            padding: 60px;
+            border-top: 1px solid var(--border);
+            color: #445069;
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-glow"></div>
+
+    <nav>
+        <div style="font-size: 1.5rem; font-weight: 800; color: var(--primary);">MLPCOIN</div>
+        <div style="font-size: 0.8rem; color: #8a99b5; letter-spacing: 2px;">MEDICAL LIFE PROTOCOL</div>
+    </nav>
+
+    <div class="hero">
+        <div class="logo-wrapper">
+            <div class="logo-glow"></div>
+            <img src="mlpcoinlogo.png" alt="MLPCOIN Logo" class="logo-img">
+        </div>
+        <h1>Future of Health Data</h1>
+        <p class="tagline">Empowering humanity through decentralized medical infrastructure. Your health, your data, your control.</p>
+        <a href="#" class="btn">PRE-SALE COMING SOON</a>
+    </div>
+
+    <div class="features">
+        <div class="card">
+            <h3>Data Ownership</h3>
+            <p>Your medical records belong to you. Encrypted on the blockchain, accessible only by your permission.</p>
+        </div>
+        <div class="card">
+            <h3>AI-Driven Insights</h3>
+            <p>Analyze your health trends using secure AI protocols without compromising your anonymity.</p>
+        </div>
+        <div class="card">
+            <h3>Move-to-Earn</h3>
+            <p>Get rewarded for living a healthy lifestyle. Turn your wellness data into MLP ecosystem assets.</p>
+        </div>
+    </div>
+
+    <footer>
+        © 2026 MLPCOIN GLOBAL PROTOCOL. DEPLOYED BY SAVAGE FOUNDER.<br>
+        <small>Decentralizing Healthcare for Everyone, Everywhere.</small>
+    </footer>
+</body>
+</html>
