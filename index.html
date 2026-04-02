@@ -4,177 +4,236 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>MLPCOIN | Medical Life Protocol</title>
-    <!-- FAVICON -->
-    <link rel="icon" type="image/png" href="mlpcoinlogo.png">
-    <link rel="apple-touch-icon" href="mlpcoinlogo.png">
+    <link rel="icon" type="image/png" href="logo.png">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --primary: #00d2ff;
-            --bg: #050a18;
-            --card-bg: rgba(255, 255, 255, 0.03);
-            --border: rgba(255, 255, 255, 0.1);
-        }
+        :root { --primary: #00d2ff; --secure-green: #00e676; --bg: #050a18; --card-bg: rgba(255, 255, 255, 0.02); --border: rgba(255, 255, 255, 0.08); }
+        body { background-color: var(--bg); color: #e2e8f0; font-family: 'Inter', sans-serif; margin: 0; overflow-x: hidden; line-height: 1.6; }
+        .bg-glow { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: radial-gradient(circle at 50% 30%, #111b33 0%, #050a18 70%); z-index: -1; }
+        
+        /* Navigation */
+        nav { padding: 15px 8%; display: flex; justify-content: space-between; align-items: center; background: rgba(5, 10, 24, 0.85); backdrop-filter: blur(12px); position: fixed; width: 84%; top: 0; z-index: 100; border-bottom: 1px solid var(--border); }
+        .nav-logo { font-size: 1.6rem; font-weight: 800; color: #fff; letter-spacing: -1px; }
+        .nav-logo span { color: var(--primary); }
+        
+        /* Hero Section */
+        .hero { padding: 200px 20px 100px; text-align: center; max-width: 900px; margin: 0 auto; }
+        .logo-img { width: 140px; margin-bottom: 30px; filter: drop-shadow(0 0 20px rgba(0, 210, 255, 0.2)); }
+        h1 { font-size: 4rem; font-weight: 800; letter-spacing: -2px; margin-bottom: 20px; color: #fff; }
+        .hero span { background: linear-gradient(90deg, #fff, var(--primary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .tagline { color: #94a3b8; font-size: 1.25rem; max-width: 700px; margin: 0 auto 50px; }
+        
+        /* Buttons */
+        .btn-group { display: flex; justify-content: center; gap: 20px; }
+        .btn { padding: 18px 40px; border-radius: 12px; font-weight: 700; text-decoration: none; transition: 0.3s; text-transform: uppercase; cursor: pointer; border: none; font-size: 0.9rem; letter-spacing: 1px; }
+        .btn-main { background: #fff; color: #050a18; box-shadow: 0 10px 30px rgba(255, 255, 255, 0.1); }
+        .btn-sec { border: 1px solid var(--border); color: #fff; background: rgba(255,255,255,0.05); }
+        .btn:hover { transform: translateY(-3px); box-shadow: 0 15px 40px rgba(0, 210, 255, 0.2); }
 
-        body {
-            background-color: var(--bg);
-            color: white;
-            font-family: 'Inter', 'Segoe UI', sans-serif;
-            margin: 0;
-            overflow-x: hidden;
-            line-height: 1.6;
-        }
+        /* Sections Title */
+        section { padding: 80px 10%; }
+        h2.section-title { text-align: center; color: #fff; font-size: 2.2rem; font-weight: 800; margin-bottom: 50px; }
 
-        .bg-glow {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at 50% 30%, #1a2a4a 0%, #050a18 70%);
-            z-index: -1;
-        }
+        /* Feature Cards */
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 25px; }
+        .card { background: var(--card-bg); padding: 40px; border-radius: 24px; border: 1px solid var(--border); transition: 0.4s; }
+        .card:hover { border-color: var(--primary); background: rgba(0, 210, 255, 0.02); }
+        .card h3 { color: var(--primary); font-size: 1.4rem; margin-bottom: 15px; }
+        .card p { color: #94a3b8; font-size: 0.95rem; }
 
-        nav {
-            padding: 20px 5%;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(5, 10, 24, 0.8);
-            backdrop-filter: blur(10px);
-            position: fixed;
-            width: 90%;
-            top: 0;
-            z-index: 100;
-            border-bottom: 1px solid var(--border);
-        }
+        /* Roadmap Steps */
+        .phase { background: rgba(255,255,255,0.02); padding: 30px; border-radius: 20px; border-left: 4px solid var(--primary); }
+        .phase h4 { color: #fff; margin: 0 0 15px; font-size: 1.2rem; }
+        .phase ul { padding: 0; list-style: none; color: #94a3b8; font-size: 0.9rem; }
+        .phase li { margin-bottom: 10px; display: flex; align-items: center; }
+        .phase li::before { content: "•"; color: var(--primary); font-weight: bold; margin-right: 10px; }
 
-        .hero {
-            padding: 180px 20px 100px;
-            text-align: center;
-        }
+        /* Modal Elements */
+        #saleModal { display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(2, 5, 12, 0.98); z-index:10000; backdrop-filter:blur(25px); align-items:center; justify-content:center; }
+        .modal-content { background:#0a0f1e; border: 1px solid var(--border); padding:45px; border-radius:32px; width:90%; max-width:420px; position:relative; text-align:center; box-shadow:0 30px 100px rgba(0,0,0,0.8); }
+        .hold-btn-container { position: relative; width: 100%; height: 65px; background: #fff; border-radius: 14px; overflow: hidden; cursor: pointer; margin-top: 30px; }
+        #holdProgress { position: absolute; top: 0; left: 0; width: 0%; height: 100%; background: var(--secure-green); transition: width 0.1s linear; }
+        #purchaseBtnText { position: absolute; top: 0; left: 0; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: #050a18; font-weight: 800; z-index: 2; pointer-events: none; }
 
-        .logo-wrapper {
-            position: relative;
-            display: inline-block;
-            margin-bottom: 30px;
-        }
-
-        .logo-glow {
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            width: 250px; height: 250px;
-            background: radial-gradient(circle, rgba(0,210,255,0.15) 0%, rgba(5,10,24,0) 70%);
-            z-index: 1;
-        }
-
-        .logo-img {
-            width: 180px;
-            position: relative;
-            z-index: 2;
-            filter: drop-shadow(0 0 15px rgba(0, 210, 255, 0.2));
-            transition: 0.5s ease;
-        }
-
-        h1 {
-            font-size: clamp(2.5rem, 6vw, 4rem);
-            font-weight: 800;
-            margin: 10px 0;
-            background: linear-gradient(to right, #fff, var(--primary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            letter-spacing: -1px;
-        }
-
-        .tagline {
-            font-size: 1.2rem;
-            color: #8a99b5;
-            max-width: 700px;
-            margin: 0 auto 40px;
-        }
-
-        .btn {
-            padding: 16px 45px;
-            background: var(--primary);
-            color: #050a18;
-            text-decoration: none;
-            border-radius: 50px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: 0.3s;
-            box-shadow: 0 10px 30px rgba(0, 210, 255, 0.3);
-        }
-
-        .btn:hover {
-            box-shadow: 0 15px 40px rgba(0, 210, 255, 0.5);
-            transform: translateY(-3px);
-        }
-
-        .features {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            padding: 50px 10%;
-            margin-bottom: 100px;
-        }
-
-        .card {
-            background: var(--card-bg);
-            padding: 40px;
-            border-radius: 24px;
-            border: 1px solid var(--border);
-            backdrop-filter: blur(5px);
-            transition: 0.4s;
-        }
-
-        .card:hover {
-            border-color: var(--primary);
-            transform: translateY(-10px);
-        }
-
-        .card h3 { color: var(--primary); margin-bottom: 15px; }
-
-        footer {
-            padding: 60px;
-            border-top: 1px solid var(--border);
-            color: #445069;
-        }
+        footer { padding: 60px; border-top: 1px solid var(--border); text-align: center; color: #475569; font-size: 0.85rem; }
     </style>
 </head>
 <body>
     <div class="bg-glow"></div>
-
     <nav>
-        <div style="font-size: 1.5rem; font-weight: 800; color: var(--primary);">MLPCOIN</div>
-        <div style="font-size: 0.8rem; color: #8a99b5; letter-spacing: 2px;">MEDICAL LIFE PROTOCOL</div>
+        <div class="nav-logo">MLP<span>COIN</span></div>
+        <div style="font-size: 0.8rem; letter-spacing: 1px; color: var(--secure-green); font-weight: 700;">● SYSTEM ONLINE</div>
     </nav>
 
-    <div class="hero">
-        <div class="logo-wrapper">
-            <div class="logo-glow"></div>
-            <img src="mlpcoinlogo.png" alt="MLPCOIN Logo" class="logo-img">
+    <header class="hero">
+        <img src="logo.png" alt="Logo" class="logo-img">
+                <!-- SLOGAN + TEKNİK AÇIKLAMA KOMBİNASYONU -->
+        <h1>Decentralized <span>Medical Infrastructure</span></h1>
+            <!-- YENİ SLOGAN (BÜYÜK VE VURUCU) -->
+        <h2 style="color: #fff; font-size: 1.8rem; font-weight: 700; margin-bottom: 15px; letter-spacing: -0.5px;">Your Health. Your Data. Your Wealth.</h2>
+        <!-- MEVCUT TEKNİK AÇIKLAMA (BİRAZ DAHA SÖNÜK VE ALTTA) -->
+        <p class="tagline" style="margin-top: 0; font-size: 1rem; opacity: 0.8;">The global protocol for secure health data ownership, AI-driven diagnostics, and incentivized medical research.</p>
+        <div class="btn-group">
+            <button class="btn btn-main openModal">Get Early Access</button>
+           <!-- WHITEPAPER BUTONU ARTIK CANLI -->
+            <a href="whitepaper.pdf" target="_blank" class="btn btn-sec">Read Whitepaper</a>
         </div>
-        <h1>Future of Health Data</h1>
-        <p class="tagline">Empowering humanity through decentralized medical infrastructure. Your health, your data, your control.</p>
-        <a href="#" class="btn">PRE-SALE COMING SOON</a>
+        
+        <div style="margin-top: 60px; opacity: 0.5; display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; filter: grayscale(1);">
+    <span style="font-weight: 800; font-size: 0.8rem;">ETHEREUM NETWORK</span>
+    <span style="font-weight: 800; font-size: 0.8rem;">IPFS STORAGE</span>
+    <span style="font-weight: 800; font-size: 0.8rem;">CHAINLINK ORACLES</span>
+    <span style="font-weight: 800; font-size: 0.8rem;">POLYGON ECOSYSTEM</span>
+</div>
+    </header>
+<!-- HOW IT WORKS SECTION -->
+    <section style="padding: 60px 10%; text-align:center; background: rgba(255,255,255,0.01);">
+        <h2 class="section-title">Operational Framework</h2>
+        <div class="grid">
+            <div class="card">
+                <h3 style="margin-top: 10px;">Secure Upload</h3>
+                <p>Users utilize military-grade encryption to upload biometric and medical records into our decentralized storage nodes.</p>
+            </div>
+
+            <div class="card">
+                <h3 style="margin-top: 10px;">Full Sovereignty</h3>
+                <p>Granular access control: You hold the private keys to decide which medical entities or AI models can query your data.</p>
+            </div>
+
+            <div class="card">
+                <h3 style="margin-top: 10px;">Neural Insights</h3>
+                <p>Proprietary AI engines process anonymized datasets to generate predictive health insights for personalized medicine.</p>
+            </div>
+
+            <div class="card">
+                <h3 style="margin-top: 10px;">Earn Rewards</h3>
+                <p>The protocol automatically distributes MLP tokens for every validated data-share event within the secure ecosystem.</p>
+            </div>
+        </div>
+    </section>
+    <section>
+        <h2 class="section-title">Core Ecosystem</h2>
+        <div class="grid">
+            <div class="card">
+                <h3>Data Sovereignty</h3>
+                <p>Full encryption of personal medical records. Your data remains on the blockchain, accessible only by your private keys.</p>
+            </div>
+            <div class="card">
+                <h3>AI Bio-Analysis</h3>
+                <p>Proprietary neural networks analyze anonymized health data to provide early-stage diagnostic insights for users.</p>
+            </div>
+            <div class="card">
+                <h3>Anti-Obesity Protocol</h3>
+                <p>Combatting the global obesity crisis through decentralized rewards. Our 'Move-to-Earn' system incentivizes physical activity, transforming your health journey into a digital asset while fighting metabolic diseases.</p>
+            </div>
+        </div>
+    </section>
+
+    <section style="background: rgba(255,255,255,0.01);">
+        <h2 class="section-title">Strategic Roadmap 2026</h2>
+        <div class="grid">
+            <div class="phase">
+                <h4>Phase 1: Q2 Inception</h4>
+                <ul>
+                    <li>Global Protocol Launch</li>
+                    <li>Secure Seed Funding Round</li>
+                    <li>AI Diagnostics Beta v1.0</li>
+                </ul>
+            </div>
+            <div class="phase">
+                <h4>Phase 2: Q3 Expansion</h4>
+                <ul>
+                    <li>Public Early Access Event</li>
+                    <li>Full Security Audit (CertiK)</li>
+                    <li>Tier-1 Exchange Listings</li>
+                </ul>
+            </div>
+            <div class="phase">
+                <h4>Phase 3: Q4 Integration</h4>
+                <ul>
+                    <li>Mainnet Ecosystem Release</li>
+                    <li>Institutional Partnerships</li>
+                    <li>Global Marketing Campaign</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- SECURE ACCESS MODAL -->
+    <div id="saleModal">
+        <div class="modal-content">
+            <span onclick="closeModal()" style="position:absolute; top:25px; right:25px; color:#475569; cursor:pointer; font-size:24px;">×</span>
+            <h3 style="color:#fff; margin-bottom:10px; font-size:1.6rem;">Early Access Portal</h3>
+            <p style="color:#94a3b8; font-size:0.85rem; margin-bottom:30px;">Seed Round Price: 1 USD = 1,000 MLP</p>
+
+            <div style="background:rgba(255,255,255,0.03); padding:25px; border-radius:20px; border:1px solid var(--border); margin-bottom:20px;">
+                <div style="text-align:left;"><label style="color:#475569; font-size:0.7rem; font-weight:800; text-transform:uppercase;">Input Amount (USDT)</label>
+                <input type="number" id="usdAmount" placeholder="Min. 1" oninput="calcMLP()" style="width:100%; background:transparent; border:none; color:#fff; font-size:1.6rem; font-weight:700; outline:none; margin-top:5px;"></div>
+                <div style="height:1px; background:var(--border); margin:15px 0;"></div>
+                <div style="text-align:left;"><label style="color:#475569; font-size:0.7rem; font-weight:800; text-transform:uppercase;">Allocated MLP Tokens</label>
+                <div id="mlpResult" style="font-size:1.6rem; font-weight:700; color:var(--primary); margin-top:5px;">0 MLP</div></div>
+            </div>
+
+            <div class="hold-btn-container" id="holdContainer">
+                <div id="holdProgress"></div>
+                <div id="purchaseBtnText">HOLD TO CONFIRM ACCESS</div>
+            </div>
+            <p style="color: #475569; font-size: 0.7rem; margin-top: 15px;">🔒 256-bit Encrypted Transaction</p>
+
+            <div style="margin-top: 30px; display: flex; justify-content: center; gap: 12px;">
+                <div style="font-size: 0.65rem; color: var(--secure-green); border: 1px solid rgba(0,230,118,0.3); padding: 5px 10px; border-radius: 6px; font-weight: 700;">AUDITED</div>
+                <div style="font-size: 0.65rem; color: var(--secure-green); border: 1px solid rgba(0,230,118,0.3); padding: 5px 10px; border-radius: 6px; font-weight: 700;">VERIFIED</div>
+            </div>
+        </div>
     </div>
 
-    <div class="features">
-        <div class="card">
-            <h3>Data Ownership</h3>
-            <p>Your medical records belong to you. Encrypted on the blockchain, accessible only by your permission.</p>
-        </div>
-        <div class="card">
-            <h3>AI-Driven Insights</h3>
-            <p>Analyze your health trends using secure AI protocols without compromising your anonymity.</p>
-        </div>
-        <div class="card">
-            <h3>Move-to-Earn</h3>
-            <p>Get rewarded for living a healthy lifestyle. Turn your wellness data into MLP ecosystem assets.</p>
-        </div>
-    </div>
+    <footer>© 2026 MLPCOIN GLOBAL PROTOCOL. DEPLOYED BY THE CORE TEAM.</footer>
 
-    <footer>
-        © 2026 MLPCOIN GLOBAL PROTOCOL. DEPLOYED BY SAVAGE FOUNDER.<br>
-        <small>Decentralizing Healthcare for Everyone, Everywhere.</small>
-    </footer>
+    <script>
+        const modal = document.getElementById('saleModal');
+        document.querySelectorAll('.openModal').forEach(btn => btn.onclick = () => modal.style.display = 'flex');
+
+        function closeModal() {
+            modal.style.display = 'none';
+            currentProgress = 0;
+            holdProgress.style.width = '0%';
+            purchaseBtnText.innerText = "HOLD TO CONFIRM ACCESS";
+            purchaseBtnText.style.color = "#050a18";
+            document.getElementById('usdAmount').value = "";
+            document.getElementById('mlpResult').innerText = "0 MLP";
+        }
+
+        function calcMLP() {
+            let usd = document.getElementById('usdAmount').value;
+            if(usd < 0) { document.getElementById('usdAmount').value = 0; usd = 0; }
+            document.getElementById('mlpResult').innerText = (usd * 1000).toLocaleString() + " MLP";
+        }
+
+        let holdTimer, currentProgress = 0;
+        const holdContainer = document.getElementById('holdContainer');
+        const holdProgress = document.getElementById('holdProgress');
+        const purchaseBtnText = document.getElementById('purchaseBtnText');
+
+        function startHold() {
+            holdTimer = setInterval(() => {
+                currentProgress += 2.5;
+                if (currentProgress >= 100) { clearInterval(holdTimer); executeTransaction(); }
+                holdProgress.style.width = currentProgress + '%';
+            }, 50);
+        }
+
+        function stopHold() { clearInterval(holdTimer); if(currentProgress < 100) { currentProgress = 0; holdProgress.style.width = '0%'; } }
+
+        function executeTransaction() {
+            purchaseBtnText.innerText = "VERIFIED ✓"; purchaseBtnText.style.color = "#fff";
+            setTimeout(() => alert("🔒 ENCRYPTION SECURE\nConnecting to Liquidity Node...\nRedirecting to Payment Gateway."), 500);
+        }
+
+        holdContainer.addEventListener('mousedown', startHold);
+        holdContainer.addEventListener('mouseup', stopHold);
+        holdContainer.addEventListener('mouseleave', stopHold);
+        holdContainer.addEventListener('touchstart', (e) => { e.preventDefault(); startHold(); });
+        holdContainer.addEventListener('touchend', stopHold);
+    </script>
 </body>
 </html>
