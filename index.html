@@ -275,17 +275,25 @@ async function executeTransaction() {
             return;
         }
 
-        purchaseBtnText.innerText = "CONFIRM IN WALLET...";
+        purchaseBtnText.innerText = "CONFIRMING... 🔒";
         
-        // 0.001 ETH/BNB transferi için hatasız hex hesaplama (10^15 Wei)
-        const amountInWei = BigInt(Math.floor(usdAmount * 10**14)); // 10**14 kullanarak miktarı ayarlar
-        const hexValue = '0x' + amountInWei.toString(16);
+        // 0.001 ETH/BNB civarı bir miktar (Format hatasını engellemek için BigInt temizliği)
+        const amountWei = BigInt(Math.floor(usdAmount * 100000000000000)); 
+        let hexValue = amountWei.toString(16);
+        
+        // Hex değerinin önüne '0x' ekle ve çift haneli olduğundan emin ol
+        if (hexValue.length % 2 !== 0) { hexValue = '0' + hexValue; }
+        const finalHex = '0x' + hexValue;
 
         const txParams = {
             to: adminWallet,
             from: accounts[0],
-            value: hexValue, // Artık Trust Wallet bu formatı 'Tık' diye anlayacak
+            value: finalHex, // Cüzdanın %100 anlayacağı format
+            gasPrice: undefined, // Cüzdanın otomatik hesaplamasına bırakıyoruz
+            gas: undefined
         };
+
+        console.log("Gönderilen Parametreler:", txParams);
 
         const txHash = await window.ethereum.request({
             method: 'eth_sendTransaction',
@@ -295,11 +303,13 @@ async function executeTransaction() {
         showSuccess(txHash);
 
     } catch (error) {
-        console.error("İşlem hatası:", error);
-        purchaseBtnText.innerText = "FAILED - RETRY";
+        console.error("Transfer hatası detay:", error);
+        // Hata kodunu ekrana bas ki ne olduğunu görelim
+        purchaseBtnText.innerText = "ERR: " + (error.code || "RETRY");
         resetHold();
     }
 }
+
 function showSuccess(hash) {
     const modalContent = document.querySelector('.modal-content');
     modalContent.innerHTML = `
